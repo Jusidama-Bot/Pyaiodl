@@ -32,7 +32,6 @@ class PrivateDl:
         #get full path of file
         self.download_path = download_path
         self.download_speed = 0
-        self.eta = "NaN"
         self.filename = "Unknown"
         self.url = None
         self.file_type = None
