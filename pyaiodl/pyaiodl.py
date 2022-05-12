@@ -5,10 +5,12 @@ import secrets
 import mimetypes
 import os
 import aiohttp
+
 from .utils import human_size, gen_uuid, getspeed
 
 import aiofiles
 from time import time
+from datetime import timedelta
 import socket
 from contextlib import suppress
 
@@ -190,7 +192,9 @@ class PrivateDl:
                 size = 0
             mime = response.headers.get('Content-Type')
             if not mime:
-                mime = self.mime_types()
+                mime = self.__mime_types()
+            if self.eta is "NaN":
+                self.eta = self.__eta()
             return (
                 filename,
                 size,
@@ -198,12 +202,22 @@ class PrivateDl:
                 response._real_url
             )
 
-    def mime_types(self):
+    def __mime_types(self):
         if self.download_path:
             mime = mimetypes.guess_type(self.download_path)
             return mime[0] or None
         return None
-
+    
+    def __eta(self):
+        if not self.downloaded:
+            return self.eta
+        end_time = time.time()
+        elapsed_time = end_time - self.start_time
+        seconds = (elapsed_time * (self.total_size / self.downloaded)) - elapsed_time
+        thing = ''.join(str(timedelta(seconds=seconds)).split('.')[:-1]).split(', ')
+        thing[-1] = thing[-1].rjust(8, '0')
+        return ', '.join(thing)
+    
     async def getStatus(self) -> dict:
         """ :get current status:
         filename:str
@@ -229,7 +243,7 @@ class PrivateDl:
             "progress": self.progress,
             "download_speed": self.download_speed,
             "complete": self._complete,
-            "eta": self.eta
+            "eta": self.eta,
             "download_path": self.download_path,
 
 
