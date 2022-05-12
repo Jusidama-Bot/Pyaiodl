@@ -193,7 +193,7 @@ class PrivateDl:
             mime = response.headers.get('Content-Type')
             if not mime:
                 mime = self.__mime_types()
-            if self.eta is "NaN":
+            if self.eta == "NaN":
                 self.eta = self.__eta()
             return (
                 filename,
@@ -210,7 +210,7 @@ class PrivateDl:
     
     def __eta(self):
         if not self.downloaded:
-            return self.eta
+            return "NaN"
         end_time = time.time()
         elapsed_time = end_time - self.start_time
         seconds = (elapsed_time * (self.total_size / self.downloaded)) - elapsed_time
