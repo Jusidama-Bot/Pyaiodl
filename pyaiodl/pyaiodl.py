@@ -209,7 +209,7 @@ class PrivateDl:
     def __eta(self):
         if not self.downloaded:
             return '00:00:00'
-        end_time = time.time()
+        end_time = time()
         elapsed_time = end_time - self.start_time
         seconds = (elapsed_time * (self.total_size / self.downloaded)) - elapsed_time
         thing = ''.join(str(timedelta(seconds=seconds)).split('.')[:-1]).split(', ')
