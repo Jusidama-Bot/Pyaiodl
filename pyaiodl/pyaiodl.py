@@ -193,8 +193,6 @@ class PrivateDl:
             mime = response.headers.get('Content-Type')
             if not mime:
                 mime = self.__mime_types()
-            if self.eta == "NaN":
-                self.eta = self.__eta()
             return (
                 filename,
                 size,
@@ -243,7 +241,7 @@ class PrivateDl:
             "progress": self.progress,
             "download_speed": self.download_speed,
             "complete": self._complete,
-            "eta": self.eta,
+            "eta": self.__eta(),
             "download_path": self.download_path,
 
 
