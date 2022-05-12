@@ -81,8 +81,7 @@ class PrivateDl:
 
             return self.uuid
         except Exception as e:
-            await self.mark_done(e)
-            return
+            return await self.mark_done(e)
 
     async def __down(self) -> None:
 
@@ -101,8 +100,7 @@ class PrivateDl:
         try:
             self.filename, self.total_size, self.file_type, self.real_url = await self.__getinfo()
         except Exception as e:
-            await self.mark_done(e)
-            return
+            return await self.mark_done(e)
 
         try:
             async with self.session.get(self.url) as r:
@@ -112,8 +110,7 @@ class PrivateDl:
                         try:
                             os.makedirs(self.download_path)
                         except Exception as e:
-                            await self.mark_done(e)
-                            return
+                            return await self.mark_done(e)
 
                     self.download_path = os.path.join(
                         self.download_path, self.filename)
@@ -134,9 +131,7 @@ class PrivateDl:
                             await self.__updateStatus(downloaded_chunk)
                             
         except Exception as e:
-
-            await self.mark_done(e)
-            return
+            return await self.mark_done(e)
 
         # session close
         self._complete = True
@@ -242,8 +237,6 @@ class PrivateDl:
             "complete": self._complete,
             "eta": self.__eta(),
             "download_path": self.download_path,
-
-
         }
 
     async def mark_done(self, error):
@@ -256,6 +249,7 @@ class PrivateDl:
         # supress CanceledError raised by asyncio cancel task
         with suppress(asyncio.CancelledError):
             await self.task
+        return self.iserror
 
 
     async def cancel(self, uuid) -> bool:
