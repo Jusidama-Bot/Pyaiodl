@@ -197,6 +197,7 @@ class PrivateDl:
                 mime,
                 response._real_url
             )
+
     def mime_types(self):
         if self.download_path:
             mime = mimetypes.guess_type(self.download_path)
