@@ -98,7 +98,7 @@ class PrivateDl:
             self.session = aiohttp.ClientSession(
                 raise_for_status=True, connector=self.conn)
         try:
-            self.filename, self.total_size, self.content_type, self.real_url = await self.__getinfo()
+            self.filename, self.total_size, self.file_type, self.real_url = await self.__getinfo()
         except Exception as e:
             await self.mark_done(e)
             return
@@ -188,12 +188,20 @@ class PrivateDl:
                 size = int(response.headers['Content-Length'])
             except KeyError:
                 size = 0
+            mime = response.headers.get('Content-Type')
+            if not mime:
+                mime = self.mime_types()
             return (
                 filename,
                 size,
-                response.headers['Content-Type'],
+                mime,
                 response._real_url
             )
+    def mime_types(self):
+        if self.download_path:
+            mime = mimetypes.guess_type(self.download_path)
+            return mime[0] or None
+        return None
 
     async def getStatus(self) -> dict:
         """ :get current status:
@@ -220,6 +228,7 @@ class PrivateDl:
             "progress": self.progress,
             "download_speed": self.download_speed,
             "complete": self._complete,
+            "eta": self.eta
             "download_path": self.download_path,
 
 
