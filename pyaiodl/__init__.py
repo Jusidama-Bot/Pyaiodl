@@ -17,16 +17,20 @@ from .errors import DownloadNotActive, InvalidId
 
 
 class Downloader:
-    def __init__(self, chunk_size=None, download_path=None):
+    def __init__(self, ua: bool = False, chunk_size: int = None, download_path: str = None):
         self._alldownloads = {}
         self.download_path = download_path
         # custom chunk size
         self.chunk_size = chunk_size
+        self.ua = ua
 
     async def download(self, url):
         try:
-            _down = PrivateDl(chunk_size=self.chunk_size,
-                              download_path=self.download_path)
+            _down = PrivateDl(
+                fake_useragent=self.ua,
+                chunk_size=self.chunk_size,
+                download_path=self.download_path,
+            )
             _uuid = await _down.download(url)
             self._alldownloads[_uuid] = {}
             self._alldownloads[_uuid] = {"obj": _down}
