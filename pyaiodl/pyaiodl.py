@@ -24,7 +24,7 @@ class PrivateDl:
                 or dl.cancel()
     """
 
-    def __init__(self, fake_useragent: bool = False, chunk_size = None, download_path=None, custom_headers=None):
+    def __init__(self, fake_ua: bool = False, chunk_size: int = None, download_path: str = None, custom_headers: dict = None):
         self.chunk_size = chunk_size
         self.total_size = 0
         self.downloaded = 0
@@ -42,8 +42,8 @@ class PrivateDl:
         self._complete = False
         self.uuid = None
         self.task = None
-        self.fake_useragent = fake_useragent
-
+        if fake_ua:
+            self.headers.update({"User-Agent": UserAgent()})
         self.conn = aiohttp.TCPConnector(
             family=socket.AF_INET,
             verify_ssl=False)
@@ -58,8 +58,6 @@ class PrivateDl:
         self.iserror = None
         self.downloadedstr = 0  # 10MiB
         self.headers = custom_headers or {}
-        if fake_useragent:
-            self.headers.update({"User-Agent": UserAgent()})
         self.progress = 0
 
     async def download(self, url: str) -> str:

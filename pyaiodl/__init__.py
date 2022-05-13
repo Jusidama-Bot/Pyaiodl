@@ -17,26 +17,25 @@ from .errors import DownloadNotActive, InvalidId
 
 
 class Downloader:
-    def __init__(self, ua: bool = False, chunk_size: int = None, download_path: str = None):
+    def __init__(self, ua: bool = False, chunk_size: int = None, download_path: str = None, custom_headers: dict = None):
         self._alldownloads = {}
         self.download_path = download_path
         # custom chunk size
         self.chunk_size = chunk_size
         self.ua = ua
+        self.custom_headers = custom_headers
 
     async def download(self, url):
         try:
             _down = PrivateDl(
-                fake_useragent=self.ua,
+                fake_ua=self.ua,
                 chunk_size=self.chunk_size,
                 download_path=self.download_path,
+                custom_headers=self.custom_headers,
             )
             _uuid = await _down.download(url)
             self._alldownloads[_uuid] = {}
-            self._alldownloads[_uuid] = {"obj": _down}
-
-            # just init things otherwise it will throw keyerror :
-            self._alldownloads[_uuid]["iscancel"] = False
+            self._alldownloads[_uuid] = {"obj": _down, "iscancel": False}
 
         except Exception as e:
             raise Exception(e)
