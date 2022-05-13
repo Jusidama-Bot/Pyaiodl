@@ -1,7 +1,6 @@
 import asyncio
 import urllib.parse
 import cgi
-import secrets
 import mimetypes
 import os
 import aiohttp
@@ -25,7 +24,7 @@ class PrivateDl:
                 or dl.cancel()
     """
 
-    def __init__(self, fake_useragent: bool = False, chunk_size = None, download_path=None):
+    def __init__(self, fake_useragent: bool = False, chunk_size = None, download_path=None, custom_headers=None):
         self.chunk_size = chunk_size
         self.total_size = 0
         self.downloaded = 0
@@ -58,9 +57,9 @@ class PrivateDl:
         # error goes here
         self.iserror = None
         self.downloadedstr = 0  # 10MiB
+        self.headers = custom_headers or {}
         if fake_useragent:
-            self.userAgent = UserAgent()
-
+            self.headers.update({"User-Agent": UserAgent()})
         self.progress = 0
 
     async def download(self, url: str) -> str:
@@ -86,12 +85,9 @@ class PrivateDl:
         downloaded_chunk = 0
 
         # incase need we need some fake User-agent
-        if self.fake_useragent:
-            headers = {
-                "User-Agent": self.userAgent
-            }
+        if len(self.headers) != 0:
             self.session = aiohttp.ClientSession(
-                headers=headers, raise_for_status=True, connector=self.conn)
+                headers=self.headers, raise_for_status=True, connector=self.conn)
         else:
             self.session = aiohttp.ClientSession(
                 raise_for_status=True, connector=self.conn)
@@ -206,6 +202,8 @@ class PrivateDl:
         seconds = (elapsed_time * (self.total_size / self.downloaded)) - elapsed_time
         thing = ''.join(str(timedelta(seconds=seconds)).split('.')[:-1]).split(', ')
         thing[-1] = thing[-1].rjust(8, '0')
+        if all('0' in i for i in thing):
+            return '00:00:00'
         return ', '.join(thing)
     
     async def getStatus(self) -> dict:
@@ -260,8 +258,6 @@ class PrivateDl:
         if not self.task.done():
             
             __task = self.__toatal_downloads[uuid]["task"]
-            __iscancel: bool = __task.cancel()
-
-            return __iscancel
+            return __task.cancel()
         else:
             return True
