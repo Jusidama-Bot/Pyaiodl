@@ -1,9 +1,10 @@
 # https://stackoverflow.com/a/43690506/11110014
 
 import random
-from time import time
 import string
+import requests
 
+from time import time
 
 def human_size(size, decimal_places=2):
     for unit in ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB']:
@@ -55,3 +56,12 @@ def get_readable_time(seconds: int) -> str:
     seconds = int(seconds)
     result += f'{seconds}s'
     return result
+
+def UserAgent():
+    try:
+        res = requests.get('https://fake-useragent.herokuapp.com/browsers/0.1.11').json()['browsers']
+        browser = random.choice(list(res.values()))
+        user_agent_list = random.choice(res[browser])
+    except KeyError:
+        user_agent_list = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36"
+    return user_agent_list

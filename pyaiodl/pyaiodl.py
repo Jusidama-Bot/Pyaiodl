@@ -6,7 +6,7 @@ import mimetypes
 import os
 import aiohttp
 
-from .utils import human_size, gen_uuid, getspeed
+from .utils import human_size, gen_uuid, getspeed, UserAgent
 
 import aiofiles
 from time import time
@@ -59,9 +59,7 @@ class PrivateDl:
         self.iserror = None
         self.downloadedstr = 0  # 10MiB
         if fake_useragent:
-            from fake_useragent import UserAgent
-            ua = UserAgent(cache=False)
-            self.userAgent = ua.random
+            self.userAgent = UserAgent()
 
         self.progress = 0
 
