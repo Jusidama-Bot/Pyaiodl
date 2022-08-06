@@ -47,7 +47,7 @@ class PrivateDl:
         self.conn = aiohttp.TCPConnector(
             family=socket.AF_INET,
             verify_ssl=False)
-
+        self.eta = '00:00:00'
         # TODO add retry
         self.max_tries = 3
         self.start_time = 0
@@ -194,8 +194,6 @@ class PrivateDl:
         return None
     
     def __eta(self):
-        if not self.downloaded:
-            return '00:00:00'
         end_time = time()
         elapsed_time = end_time - self.start_time
         seconds = (elapsed_time * (self.total_size / self.downloaded)) - elapsed_time
