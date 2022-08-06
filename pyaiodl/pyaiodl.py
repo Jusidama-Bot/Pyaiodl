@@ -145,6 +145,7 @@ class PrivateDl:
             self.progress = round((self.downloaded / self.total_size) * 100)
         except:
             self.progress = 0
+        self.eta = self.__eta()
 
     # @retry
     async def __getinfo(self) -> tuple:
@@ -229,7 +230,7 @@ class PrivateDl:
             "progress": self.progress,
             "download_speed": self.download_speed,
             "complete": self._complete,
-            "eta": self.__eta(),
+            "eta": self.eta,
             "download_path": self.download_path,
         }
 
