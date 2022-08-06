@@ -199,8 +199,6 @@ class PrivateDl:
         seconds = (elapsed_time * (self.total_size / self.downloaded)) - elapsed_time
         thing = ''.join(str(timedelta(seconds=seconds)).split('.')[:-1]).split(', ')
         thing[-1] = thing[-1].rjust(8, '0')
-        if all('0' in i for i in thing):
-            return '00:00:00'
         return ', '.join(thing)
     
     async def getStatus(self) -> dict:
